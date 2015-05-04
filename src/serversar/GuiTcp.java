@@ -20,7 +20,7 @@ import java.util.ArrayList;
  *
  * @author federico olivarez
  */
-public class GuiTcp extends javax.swing.JFrame {
+public class GuiTcp extends javax.swing.JFrame { 
 
     /**
      * Creates new form GuiTcp
