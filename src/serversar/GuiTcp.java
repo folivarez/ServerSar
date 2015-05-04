@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author fede
+ * @author federico olivarez
  */
 public class GuiTcp extends javax.swing.JFrame {
 
@@ -103,6 +103,7 @@ public class GuiTcp extends javax.swing.JFrame {
     private void btn_lanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_lanzarActionPerformed
 
         final int PUERTO = 6004;
+        
         ServerSocket socketServer;
         Socket socket;
 //        DataOutputStream salida;
