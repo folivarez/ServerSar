@@ -20,7 +20,7 @@ import java.util.ArrayList;
  *
  * @author federico olivarez
  */
-public class GuiTcp extends javax.swing.JFrame { 
+public class GuiTcp extends javax.swing.JFrame {
 
     /**
      * Creates new form GuiTcp
@@ -42,6 +42,7 @@ public class GuiTcp extends javax.swing.JFrame {
         btn_lanzar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_mensaje = new javax.swing.JTextArea();
+        b_salir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,26 +57,36 @@ public class GuiTcp extends javax.swing.JFrame {
         txt_mensaje.setRows(5);
         jScrollPane1.setViewportView(txt_mensaje);
 
+        b_salir.setText("Salir");
+        b_salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_salirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(50, 50, 50)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(185, 185, 185)
-                        .addComponent(btn_lanzar)
-                        .addGap(0, 203, Short.MAX_VALUE)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                 .addGap(87, 87, 87))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(143, 143, 143)
+                .addComponent(btn_lanzar)
+                .addGap(84, 84, 84)
+                .addComponent(b_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
-                .addComponent(btn_lanzar)
-                .addGap(84, 84, 84)
+                .addGap(45, 45, 45)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_lanzar)
+                    .addComponent(b_salir))
+                .addGap(80, 80, 80)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(68, Short.MAX_VALUE))
         );
@@ -104,57 +115,83 @@ public class GuiTcp extends javax.swing.JFrame {
 
         final int PUERTO = 6004;
         
-        ServerSocket socketServer;
-        Socket socket;
+       
+
+        Thread t_lanzarSocket = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                ServerSocket socketServer;
+                Socket socket;
 //        DataOutputStream salida;
-        DataOutputStream salida;
-        String mensajeRecibido;
-        //BufferedReader entrada;
-        ObjectInputStream entrada;
+                DataOutputStream salida;
+                String mensajeRecibido;
+                //BufferedReader entrada;
+                ObjectInputStream entrada;
 
-        try {
-            socketServer = new ServerSocket(PUERTO);/* crea socketServer servidor que escuchara en puerto 6004*/
+                try {
+                    socketServer = new ServerSocket(PUERTO);/* crea socketServer servidor que escuchara en puerto 6004*/
 
-            socket = new Socket();
-            System.out.println("Esperando una conexión:");
-            socket = socketServer.accept();
-            System.out.println("ip_" + socket.getLocalAddress().toString());
+                    socket = new Socket();
+                    System.out.println("Esperando una conexión:");
+                    txt_mensaje.setText("Esperando una conexión");
+                    txt_mensaje.repaint();
+                    
+                    socket = socketServer.accept();
+                    System.out.println("ip_" + socket.getLocalAddress().toString());
 
 //Inicia el socketServer, ahora esta esperando una conexión por parte del cliente
-            System.out.println("Un cliente se ha conectado.");
+                    System.out.println("Un cliente se ha conectado.");
+                    txt_mensaje.setText("Un cliente se ha conectado.");
+                    txt_mensaje.repaint();
 
 //Canales de entrada y salida de datos
-            //entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            entrada = new ObjectInputStream (socket.getInputStream());
-            salida = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Confirmando conexion al cliente....");
-            salida.writeUTF("Conexión exitosa envia un mensaje :D");
-            
-            datosVictima(entrada.readObject());
+                    //entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    entrada = new ObjectInputStream(socket.getInputStream());
+                    salida = new DataOutputStream(socket.getOutputStream());
+                    System.out.println("Confirmando conexion al cliente....");
+                    salida.writeUTF("Conexión exitosa envia un mensaje :D");
+                    
+
+                    datosVictima(entrada.readObject());
 //Recepcion de mensaje
-            //mensajeRecibido = entrada.readLine();
+                    //mensajeRecibido = entrada.readLine();
 
-            //System.out.println(mensajeRecibido);
-            salida.writeUTF("Se recibio tu mensaje.");
+                    //System.out.println(mensajeRecibido);
+                    salida.writeUTF("Se recibio tu mensaje.");
+                    txt_mensaje.setText("Se recibio tu mensaje.");
+                    txt_mensaje.repaint();
 
-            socketServer.close();//Aqui se cierra la conexión con el cliente
-            salida.writeUTF("Terminando conexion...");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+                    socketServer.close();//Aqui se cierra la conexión con el cliente
+                    salida.writeUTF("Terminando conexion...");
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
         
-        
+        t_lanzarSocket.start();
+
+
     }//GEN-LAST:event_btn_lanzarActionPerformed
-    
-    private void datosVictima(Object oVictima){
-     
-        ArrayList<String> aVictima =  new ArrayList<String>();
-        
-        aVictima = ((ArrayList<String>)oVictima);
-        
+
+    private void b_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_salirActionPerformed
+        // TODO add your handling code here:
+        System.exit(1);
+    }//GEN-LAST:event_b_salirActionPerformed
+
+    private void datosVictima(Object oVictima) {
+
+        ArrayList<String> aVictima = new ArrayList<String>();
+
+        aVictima = ((ArrayList<String>) oVictima);
+
         System.out.println("victima " + aVictima.get(1));
-        
+
     }
+
     /**
      * @param args the command line arguments
      */
@@ -192,6 +229,7 @@ public class GuiTcp extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton b_salir;
     private javax.swing.JButton btn_lanzar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
